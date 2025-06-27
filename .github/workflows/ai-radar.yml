@@ -1,0 +1,32 @@
+name: AI Startup Radar
+
+on:
+  schedule:
+    # 04:00 UTC → 06:00 Europe/Amsterdam (free tier cron)
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  GS_CREDS_JSON: ${{ secrets.GS_CREDS_JSON }}
+  GSHEET_ID: ${{ secrets.GSHEET_ID }}
+  GSHEET_TAB: ${{ secrets.GSHEET_TAB }}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install --disable-pip-version-check -r requirements.txt
+
+      - name: Execute ETL
+        run: python daily_ai_startups.py
